@@ -1,85 +1,101 @@
 <template>
   <div v-if="show" class="spec-mask-wrapper">
     <div class="mask" @click="hide"></div>
-    <scroll class="scroll-content">
-      <div class="spec-choose" ref="spec">
-        <div class="spec-choose-wrapper">
-          <span class="icon-close" @click="hide"></span>
-          <div class="goods-pic">
-            <img src="./pic.png" alt="">
-          </div>
-          <div class="goods-info border-1px-e5">
-            <span>￥299.00</span>
-            <span>库存 88</span>
-            <span>请选择规格</span>
-          </div>
-          <div class="goods-spec border-1px-e5">
-            <div class="goods-spec-title">规格</div>
-            <div class="goods-spec-detail">
-          <span v-for="(item, index) in spec" :class="{'active':item.active}"
-                @click="choose(item, index)">{{item.title}}</span>
+    <div class="spec-choose" ref="spec">
+
+      <div class="spec-choose-wrapper">
+        <span class="icon-close" @click="hide"></span>
+        <div class="goods-pic">
+          <img src="./pic.png" alt="">
+        </div>
+        <div class="goods-info border-1px-e5">
+          <span>￥{{goods.salesPrice}}</span>
+          <span>库存 {{goods.invQty}}</span>
+          <span v-if="!specStr">请选择规格</span>
+          <span v-if="specStr">{{specStr}}</span>
+        </div>
+        <scroll class="scroll-content">
+          <div>
+            <div class="goods-spec border-1px-e5">
+              <div v-for="(item, index) in attrs">
+                <div class="goods-spec-title">{{item.attrName}}</div>
+                <div class="goods-spec-detail">
+          <span v-for="(item2, index2) in item.items" :class="{'active':item2.active}"
+                @click="choose(item, index, item2, index2)">{{item2.attrName}}</span>
+                </div>
+              </div>
             </div>
-            <div class="goods-spec-title">规格</div>
-            <div class="goods-spec-detail">
-          <span v-for="(item, index) in spec" :class="{'active':item.active}"
-                @click="choose(item, index)">{{item.title}}</span>
-            </div>
-            <div class="goods-spec-title">规格</div>
-            <div class="goods-spec-detail">
-          <span v-for="(item, index) in spec" :class="{'active':item.active}"
-                @click="choose(item, index)">{{item.title}}</span>
-            </div>
-          </div>
-          <div class="goods-num">
-            <span class="goods-num-title">数量</span>
-            <div class="goods-num-ctrl">
-              <span @click="sub">－</span>
-              <input type="text" v-model="num">
-              <span @click="add">＋</span>
+            <div class="goods-num">
+              <span class="goods-num-title">数量</span>
+              <div class="goods-num-ctrl">
+                <span @click="sub">－</span>
+                <input type="text" v-model="num">
+                <span @click="add">＋</span>
+              </div>
             </div>
           </div>
-          <div class="goods-ctrl">
-            <div class="goods-ctrl-add">加入购物车</div>
-            <div class="goods-ctrl-buy" @click="buy">立即购买</div>
-          </div>
+        </scroll>
+        <div class="goods-ctrl">
+          <div class="goods-ctrl-add">加入购物车</div>
+          <div class="goods-ctrl-buy" @click="buy">立即购买</div>
         </div>
       </div>
-    </scroll>
+    </div>
   </div>
 </template>
 
 <script>
   import Scroll from 'components/Scroll/Scroll'
 
-  const map = [{
-    title: '30ml',
-    active: false
-  }, {
-    title: '50ml',
-    active: false
-  }, {
-    title: '100ml',
-    active: false
-  }]
-
   export default {
     components: {
       Scroll
     },
+    props: {
+      attrs: {
+        type: Array,
+        default: function () {
+          return []
+        }
+      },
+      specs: {
+        type: Array,
+        default: function () {
+          return []
+        }
+      },
+      goods: {
+        type: Object,
+        default: function () {
+          return {}
+        }
+      }
+    },
     data: function () {
       return {
-        spec: map,
+        spec: [],
         num: 1,
-        show: false
+        show: false,
+        specStr: ''
       }
     },
     methods: {
-      choose: function (item, index) {
-        this.spec.forEach((item, index, array) => {
-          item.active = false
+      choose: function (item, index, item2, index2) {
+        item.items.forEach((item4, index4, array4) => {
+          item4.active = false
         })
-        item.active = true
-        this.$set(this.spec, index, item)
+        item.items[index2].active = true
+        this.spec[index] = item2.attrName
+        let specStr = this.spec.join(',')
+        console.log(this.spec)
+        this.specs.forEach((spec, i, a) => {
+          if (specStr === spec.specName) {
+            this.specStr = spec.specName
+            this.goods.salesPrice = spec.specPrice
+            this.goods.invQty = spec.invQty
+          }
+        })
+        this.$set(this.attrs, index, item)
       },
       add: function () {
         this.num++
@@ -90,6 +106,7 @@
         }
       },
       hide: function () {
+        this.$emit('enable')
         this.$nextTick(() => {
           this.$refs.spec.style.top = `100%`
         })
@@ -122,7 +139,9 @@
   @import '~common/less/mixin.less';
 
   .scroll-content {
-
+    width: 100%;
+    height: 274/@rem;
+    overflow: hidden;
   }
 
   .spec-mask-wrapper {
@@ -183,14 +202,18 @@
         flex-direction: column;
         align-items: flex-start;
         justify-content: center;
+        padding-bottom: 30/@rem;
+        padding-top: 10/@rem;
         .goods-spec-title {
           color: #666666;
           .dpr-font(14px);
+          margin-top: 20/@rem;
         }
         .goods-spec-detail {
           display: flex;
           align-items: center;
           justify-content: flex-start;
+          margin-top: 20/@rem;
           span {
             margin-right: 20/@rem;
             width: 120/@rem;

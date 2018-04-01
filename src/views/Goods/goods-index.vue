@@ -7,7 +7,7 @@
                   dots-position="center" :show-dots="false" @on-index-change="change"
                   :show-desc-mask="false" :auto="true" :loop="true" :interval="3000"></swiper>
           <div class="swiper-num">
-            <span>{{current+1}}/4</span>
+            <span>{{current+1}}/{{picLegth}}</span>
           </div>
         </div>
         <div class="goods-title">
@@ -19,9 +19,9 @@
           </div>
         </div>
         <!--<div class="goods-activity">-->
-          <!--<span>活动</span>-->
-          <!--<span>买赠</span>-->
-          <!--<span>赠兰蔻香水小样 仅限前5000名</span>-->
+        <!--<span>活动</span>-->
+        <!--<span>买赠</span>-->
+        <!--<span>赠兰蔻香水小样 仅限前5000名</span>-->
         <!--</div>-->
         <div class="goods-spec" @click="buy">
           <span>规格选择</span>
@@ -48,7 +48,7 @@
       <span :class="{'detail-active':detailActive===2}" @click="goodsInfo">购买须知</span>
     </div>
     <div class="goods-ctrl" @click="buy">立即购买</div>
-    <spec-choose ref="spec"></spec-choose>
+    <spec-choose @enable="enable" ref="spec" :goods="goods" :attrs="goods.attrs" :specs="goods.specs"></spec-choose>
   </scroll>
 </template>
 
@@ -74,7 +74,8 @@
         detailActive: 0,
         detailShow: false,
         specShow: false,
-        goods: {}
+        goods: {},
+        picLegth: 0
       }
     },
     methods: {
@@ -83,11 +84,13 @@
           id: '0d32bc229af84724bd3a94f337975abda'
         }
         GoodsModel.goods(params, (res) => {
+          console.log(res)
           this.goods = res.data
-          for (let i = 0; i < 4; i++) {
+          this.picLegth = this.goods.goodsPic.length
+          for (let i = 0; i < this.goods.goodsPic.length; i++) {
             this.picList.push({
               url: 'javascript:',
-              img: 'https://cs1.gzqqs.com/qqs/jsp/weixin/test/index.png'
+              img: 'http://119.23.27.158:8070' + this.goods.goodsPic[i]
             })
           }
           this.goods.goodsPrice = this.goods.goodsPrice.toFixed(2)
@@ -96,8 +99,12 @@
       },
       buy: function () {
         this.$refs.spec.show = true
+        this.$refs.wrapper.disable()
         this.$nextTick(() => {
         })
+      },
+      enable: function () {
+        this.$refs.wrapper.enable()
       },
       scroll: function (pos) {
         if (pos.y > 0) {
