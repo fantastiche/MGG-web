@@ -18,9 +18,25 @@ export default new Router({
         name: 'index',
         component: resolve => require(['../views/Index/index.vue'], resolve)
       }, {
+        path: '/mine',
+        name: 'mine',
+        component: resolve => require(['../views/Mine/mine.vue'], resolve)
+      }, {
+        path: '/shoppingCart',
+        name: 'shoppingCart',
+        component: resolve => require(['../views/ShoppingCart/shopping-cart-list.vue'], resolve)
+      }, {
         path: '/orderConfirm',
         name: 'orderConfirm',
         component: resolve => require(['../views/Order/order-confirm.vue'], resolve)
+      }, {
+        path: '/orderList',
+        name: 'orderList',
+        component: resolve => require(['../views/Order/order-list.vue'], resolve)
+      }, {
+        path: '/orderPay',
+        name: 'orderPay',
+        component: resolve => require(['../views/Order/order-pay.vue'], resolve)
       }, {
         path: '/addressEdit',
         name: 'addressEdit',

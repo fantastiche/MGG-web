@@ -31,6 +31,7 @@
 
 <script>
   import {XAddress, Group, ChinaAddressV4Data} from 'vux'
+  import GoodsModel from '../../models/goods-model'
 
   export default {
     components: {
@@ -104,10 +105,23 @@
           })
           return 0
         } else {
-          this.$vux.toast.show({
-            text: '保存成功！',
-            time: 3000,
-            type: 'success'
+          let params = {
+            'user_id': '0340d49a98ea4017b5523433d8627212',
+            'IS_DEFAULT': 1,
+            'ADDR_REALNAME': this.name,
+            'ADDR_PHONE': this.phone,
+            'ADDR_CITY': this.area,
+            'ADDRESS': this.address
+          }
+          GoodsModel.addressAdd(params, (res) => {
+            console.log(res)
+            if (res.data.result === 1) {
+              this.$vux.toast.show({
+                text: '保存成功！',
+                time: 3000,
+                type: 'success'
+              })
+            }
           })
         }
       }

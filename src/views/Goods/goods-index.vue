@@ -47,8 +47,21 @@
       <span :class="{'detail-active':detailActive===1}" @click="goodsSize">规格参数</span>
       <span :class="{'detail-active':detailActive===2}" @click="goodsInfo">购买须知</span>
     </div>
-    <div class="goods-ctrl" @click="buy">立即购买</div>
-    <spec-choose @enable="enable" ref="spec" :goods="goods" :attrs="goods.attrs" :specs="goods.specs"></spec-choose>
+    <div class="goods-ctrl">
+      <div class="goods-ctrl-icon vux-1px-r" @click="shoppingCart">
+        <span class="icon-shopping-cart"></span>
+        <span>购物车</span>
+        <div class="cartNum vux-1px" v-if="cartNum>0">{{cartNum}}</div>
+      </div>
+      <div class="goods-ctrl-icon vux-1px-r" @click="goMine">
+        <span class="icon-personal"></span>
+        <span>我的</span>
+      </div>
+      <div class="goods-ctrl-add" @click="addCart">加入购物车</div>
+      <div class="goods-ctrl-buy" @click="buy">立即购买</div>
+    </div>
+    <spec-choose :goodsId="goodsId" @enable="enable" ref="spec" :goods="goods" :attrs="goods.attrs"
+                 :specs="goods.specs" @cartCount="cartCount"></spec-choose>
   </scroll>
 </template>
 
@@ -75,13 +88,15 @@
         detailShow: false,
         specShow: false,
         goods: {},
-        picLegth: 0
+        picLegth: 0,
+        goodsId: this.GOODSID,
+        cartNum: 0
       }
     },
     methods: {
       init: function () {
         let params = {
-          id: '0d32bc229af84724bd3a94f337975abda'
+          id: this.GOODSID
         }
         GoodsModel.goods(params, (res) => {
           console.log(res)
@@ -93,15 +108,37 @@
               img: 'http://119.23.27.158:8070' + this.goods.goodsPic[i]
             })
           }
+          params = {
+            'user_id': '0340d49a98ea4017b5523433d8627212'
+          }
+          GoodsModel.cartList(params, (res) => {
+            this.cartNum = res.data.cart_count
+          })
           this.goods.goodsPrice = this.goods.goodsPrice.toFixed(2)
           this.goods.salesPrice = this.goods.salesPrice.toFixed(2)
         })
       },
       buy: function () {
+        this.$refs.spec.ation = true
         this.$refs.spec.show = true
         this.$refs.wrapper.disable()
         this.$nextTick(() => {
         })
+      },
+      shoppingCart: function () {
+        this.$router.push({
+          path: '/shoppingCart'
+        })
+      },
+      addCart: function () {
+        this.$refs.spec.ation = false
+        this.$refs.spec.show = true
+        this.$refs.wrapper.disable()
+        this.$nextTick(() => {
+        })
+      },
+      cartCount: function (cartNum) {
+        this.cartNum = cartNum
       },
       enable: function () {
         this.$refs.wrapper.enable()
@@ -121,6 +158,11 @@
       },
       change: function (index) {
         this.current = index
+      },
+      goMine: function () {
+        this.$router.push({
+          path: '/mine'
+        })
       },
       goDetail: function (click) {
         this.active = 1
@@ -384,12 +426,55 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    background: @red;
-    color: @white;
-    height: 98/@rem;
-    line-height: 98/@rem;
-    text-align: center;
-    .dpr-font(16px);
+    height: 99/@rem;
+    display: flex;
+    align-items: center;
+    background: @white;
+    box-shadow: 0 0 13/@rem rgba(0, 0, 0, 0.2);
+    .goods-ctrl-icon {
+      width: 124/@rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      position: relative;
+      .cartNum {
+        position: absolute;
+        top: 5/@rem;
+        left: 70/@rem;
+        height: 22/@rem;
+        padding: 0 4/@rem;
+        border-color: @red;
+        color: @red;
+        background: @white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .dpr-font(9px);
+        &:before {
+          border-color: @red !important;
+          border-radius: 22/@rem;
+        }
+      }
+    }
+    .goods-ctrl-add {
+      flex-grow: 1;
+      text-align: center;
+      .dpr-font(16px);
+      color: #333333;
+      height: 100%;
+      line-height: 99/@rem;
+    }
+    .goods-ctrl-buy {
+      text-align: center;
+      .dpr-font(16px);
+      color: @white;
+      background: linear-gradient(to right, #ff3963, @red);
+      height: 100%;
+      line-height: 99/@rem;
+      width: 250/@rem;
+    }
   }
 
 </style>

@@ -1,16 +1,17 @@
 <template>
   <div class="nav">
     <div class="nav-wrapper">
-      <div class="nav-home">
+      <div class="nav-home" @click="goHome">
         <span class="icon-home" :class="{'icon-home-active':position===0}"></span>
         <span :class="{'red':position===0}">首页</span>
       </div>
-      <div class="nav-shopping-cart">
-        <span class="icon-shopping-cart" :class="{'shopping-cart-active':position===1}"></span>
+      <div class="nav-shopping-cart" @click="goCart">
+        <span class="icon-shopping-cart" :class="{'icon-shopping-cart-active':position===1}"></span>
         <span :class="{'red':position===1}">购物车</span>
+        <div class="cartNum vux-1px" v-if="cartNum>0">{{cartNum}}</div>
       </div>
-      <div class="nav-personal">
-        <span class="icon-personal" :class="{'personal-active':position===2}"></span>
+      <div class="nav-personal" @click="goMine">
+        <span class="icon-personal" :class="{'icon-personal-active':position===2}"></span>
         <span :class="{'red':position===2}">我的</span>
       </div>
     </div>
@@ -18,12 +19,49 @@
 </template>
 
 <script>
+  import GoodsModel from '../../models/goods-model'
+
+  const userId = '0340d49a98ea4017b5523433d8627212'
+
   export default {
     props: {
       position: {
         type: Number,
         default: 0
       }
+    },
+    data: function () {
+      return {
+        cartNum: 0
+      }
+    },
+    methods: {
+      goHome: function () {
+        this.$router.push({
+          path: '/index'
+        })
+      },
+      goCart: function () {
+        this.$router.push({
+          path: '/shoppingCart'
+        })
+      },
+      goMine: function () {
+        this.$router.push({
+          path: '/mine'
+        })
+      },
+      init: function () {
+        let params = {
+          'user_id': userId
+        }
+        GoodsModel.cartList(params, (res) => {
+          this.cartNum = res.data.cart_count
+        })
+      }
+    },
+    created: function () {
+      this.init()
     }
   }
 </script>
@@ -31,6 +69,32 @@
 <style lang="less">
   //noinspection CssUnknownTarget
   @import '~common/less/mixin.less';
+
+  .nav-shopping-cart {
+    position: relative;
+  }
+
+  .cartNum {
+    position: absolute;
+    top: 0/@rem;
+    left: 142/@rem;
+    height: 22/@rem;
+    min-width: 22/@rem;
+    padding: 0 4/@rem;
+    border-color: @red;
+    border-radius: 11/@rem;
+    color: @red;
+    background: @white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1003;
+    .dpr-font(9px);
+    &:before {
+      border-color: @red !important;
+      border-radius: 44/@rem;
+    }
+  }
 
   .nav {
     position: fixed;

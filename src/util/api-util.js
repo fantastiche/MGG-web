@@ -7,7 +7,7 @@ import axios from 'axios'
  * @returns {string} 完整地址
  */
 function structureApiUrl(path) {
-  let url = config.protocol + '://' + config.host + config.basePath + path
+  let url = config.protocol + '://' + config.host+ config.basePath + path
 
   return url
 }

@@ -9,6 +9,9 @@
   import Mask from 'components/Mask/Mask'
   import {mapGetters} from 'vuex'
 
+  document.querySelector('body').addEventListener('touchmove', function (ev) {
+    event.preventDefault()
+  })
   export default {
     name: 'app',
     components: {
@@ -35,17 +38,22 @@
   html {
     width: 100%;
     height: 100%;
+    overflow: hidden;
   }
 
   body {
     width: 100%;
     height: 100%;
     background-color: #f3f5f7;
+    overflow: hidden;
   }
 
   #app {
     width: 100%;
     height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
   }
 
   input, textarea {
@@ -57,5 +65,34 @@
 
   input:focus, textarea:focus {
     border: none;
+  }
+
+  .weui-dialog {
+    width: 580/@rem !important;
+    border-radius: 20/@rem;
+  }
+
+  .weui-dialog__bd:first-child {
+    padding: 50/@rem 60/@rem;
+  }
+
+  .weui-dialog__bd {
+    .dpr-font(15px);
+    color: #333333;
+    line-height: 45/@rem;
+  }
+
+  .weui-dialog__ft {
+    height: 90/@rem;
+    line-height: 90/@rem;
+  }
+
+  .weui-dialog__btn {
+    .dpr-font(17px);
+    color: #333333;
+  }
+
+  .weui-dialog__btn_primary {
+    color: @red !important;
   }
 </style>

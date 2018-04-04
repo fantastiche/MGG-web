@@ -36,8 +36,7 @@
           </div>
         </scroll>
         <div class="goods-ctrl">
-          <div class="goods-ctrl-add">加入购物车</div>
-          <div class="goods-ctrl-buy" @click="buy">立即购买</div>
+          <div class="goods-ctrl-buy" @click="buy">确定</div>
         </div>
       </div>
     </div>
@@ -46,6 +45,7 @@
 
 <script>
   import Scroll from 'components/Scroll/Scroll'
+  import GoodsModel from '../../models/goods-model'
 
   export default {
     components: {
@@ -69,6 +69,10 @@
         default: function () {
           return {}
         }
+      },
+      goodsId: {
+        type: String,
+        default: ''
       }
     },
     data: function () {
@@ -76,7 +80,9 @@
         spec: [],
         num: 1,
         show: false,
-        specStr: ''
+        specStr: '',
+        specId: '',
+        action: false
       }
     },
     methods: {
@@ -91,6 +97,7 @@
         this.specs.forEach((spec, i, a) => {
           if (specStr === spec.specName) {
             this.specStr = spec.specName
+            this.specId = spec.specId
             this.goods.salesPrice = spec.specPrice
             this.goods.invQty = spec.invQty
           }
@@ -115,9 +122,36 @@
         }, 300)
       },
       buy: function () {
-        this.$router.push({
-          path: '/orderConfirm'
-        })
+        if (this.action) {
+          let params = {
+            'user_id': '0340d49a98ea4017b5523433d8627212',
+            'spec_id': this.specId,
+            'goods_count': this.num,
+            'goods_id': this.goodsId
+          }
+          this.$router.push({
+            path: '/orderConfirm',
+            query: {
+              userId: params.user_id,
+              specId: params.spec_id,
+              goodsCount: params.goods_count,
+              goodsId: params.goods_id
+            }
+          })
+        } else {
+          let params = {
+            'user_id': '0340d49a98ea4017b5523433d8627212',
+            'spec_id': this.specId,
+            'goods_count': this.num,
+            'goods_id': this.goodsId
+          }
+          GoodsModel.cartAdd(params, (res) => {
+            if (res.data.result === 1) {
+              this.$emit('cartCount', res.data.cart_count)
+              this.hide()
+            }
+          })
+        }
       }
     },
     created: function () {
@@ -216,7 +250,7 @@
           margin-top: 20/@rem;
           span {
             margin-right: 20/@rem;
-            width: 120/@rem;
+            padding: 0 20/@rem;
             height: 48/@rem;
             background: #f7f7f7;
             color: #333333;
@@ -292,7 +326,7 @@
         }
         .goods-ctrl-buy {
           height: 100%;
-          background: @red;
+          background: linear-gradient(to right, #ff3963, @red);
           color: @white;
         }
       }

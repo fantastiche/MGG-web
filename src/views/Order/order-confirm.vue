@@ -1,15 +1,15 @@
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 <template>
+<template>
   <div class="content">
     <div class="confirm-bottom">
       <div class="confirm-info">
-        <div>总价：<span>￥868.00</span></div>
-        <div>运费：￥0.00</div>
+        <div>总价：<span>￥{{total.toFixed(2)}}</span></div>
+        <div>运费：￥{{freight.toFixed(2)}}</div>
       </div>
       <div class="confirm" @click="sub">提交订单</div>
     </div>
     <scroll class="scroll-content">
       <div class="order-body">
-        <div class="order-address" @click="editAddress" v-if="remaining">
+        <div class="order-address" @click="editAddress" v-if="!address">
           <div class="order-address-input">
             <span class="icon-address"></span>
             <input type="text" placeholder="请填写您的收货地址" readonly>
@@ -17,20 +17,20 @@
           <span class="icon-next"></span>
           <img src="./pic_address.png" alt="">
         </div>
-        <div class="order-address-wrapper">
+        <div class="order-address-wrapper" v-if="address">
           <div class="order-address-info">
             <div class="order-address-name">
-              <span>张三</span>
+              <span>{{address.addr_realname}}</span>
               <span class="tag vux-1px">默认</span>
             </div>
             <div class="order-address-phone">
-              13488888888
+              {{address.addr_phone}}
             </div>
           </div>
           <div class="order-address" @click="selectAddress">
             <div class="order-address-input">
               <span class="icon-address"></span>
-              <textarea v-model="address" placeholder="请填写您的收货地址" readonly></textarea>
+              <textarea v-model="address.addr_city+address.address" placeholder="请填写您的收货地址" readonly></textarea>
             </div>
             <span class="icon-next"></span>
             <img src="./pic_address.png" alt="">
@@ -38,15 +38,15 @@
         </div>
         <div class="order-list">
           <div class="order-list-item border-1px-e8" v-for="(item, index) in list">
-            <img src="./pic01.png" alt="">
+            <img :src="'http://119.23.27.158:8070'+item.goods_pic" alt="">
             <div class="order-list-item-info">
               <div class="order-list-item-info-title">
-                <span>法国兰蔻女士miracle之魅力花香调香水50ml 100ml</span>
-                <span>规格：50ml</span>
+                <span>{{item.goods_name}}</span>
+                <span>规格：{{item.spec_name}}</span>
               </div>
               <div class="order-list-item-info-price">
-                <span>￥599.00</span>
-                <span>×3</span>
+                <span>￥{{item.goods_price.toFixed(2)}}</span>
+                <span>×{{item.goods_count}}</span>
               </div>
             </div>
           </div>
@@ -60,37 +60,37 @@
           <span :class="{'icon-check': remaining,'icon-uncheck':!remaining}"
                 @click="remainingCheck(0)"></span>
             <span>使用余额</span>
-            <span>(￥10.00)</span>
+            <span>(￥{{remainingNum.toFixed(2)}})</span>
           </div>
           <div class="order-discounts">
           <span :class="{'icon-check': coin,'icon-uncheck':!coin}"
                 @click="remainingCheck(1)"></span>
             <span>使用美币</span>
-            <span>(￥10.00)</span>
+            <span>(￥{{remainingNum.toFixed(2)}})</span>
           </div>
         </div>
         <div class="order-price-list">
           <div class="order-price-detail border-1px-e8">
             <span>商品金额</span>
-            <span>￥878.00</span>
+            <span>￥{{detail.order_total.toFixed(2)}}</span>
           </div>
           <div class="order-price-other border-1px-e8">
             <div>
               <span>运费：</span>
-              <span>￥0.00</span>
+              <span>￥{{freight.toFixed(2)}}</span>
             </div>
-            <div>
+            <div v-if="remaining">
               <span>余额抵扣：</span>
               <span>￥10.00</span>
             </div>
-            <div>
+            <div v-if="coin">
               <span>美币抵扣：</span>
               <span>￥10.00</span>
             </div>
           </div>
           <div class="order-price-total">
             <span>总价</span>
-            <span>￥868.00</span>
+            <span>￥{{total.toFixed(2)}}</span>
           </div>
         </div>
       </div>
@@ -100,6 +100,7 @@
 
 <script>
   import Scroll from 'components/Scroll/Scroll'
+  import GoodsModel from '../../models/goods-model'
 
   export default {
     components: {
@@ -107,10 +108,15 @@
     },
     data: function () {
       return {
-        list: [0, 0, 0],
+        list: [],
         remaining: false,
         coin: false,
-        address: '广东省广州市番禺区天安科技园20号楼千千氏大楼'
+        address: '',
+        detail: {},
+        freight: 0,
+        total: 0,
+        coinNum: 0,
+        remainingNum: 0
       }
     },
     methods: {
@@ -129,8 +135,61 @@
       selectAddress: function () {
       },
       sub: function () {
-
+        let cartId = ''
+        if (this.$route.query.cartId) {
+          cartId = this.$route.query.cartId
+        }
+        let params = {
+          'user_id': this.$route.query.userId,
+          'spec_id': this.$route.query.specId,
+          'goods_count': this.$route.query.goodsCount,
+          'goods_id': this.$route.query.goodsId,
+          'address_id': this.address.address_id,
+          'coupon_id': '',
+          'shopCode': '012345',
+          'cart_id': cartId
+        }
+        GoodsModel.orderAdd(params, (res) => {
+          console.log(res)
+          this.$vux.toast.show({
+            text: '订单创建成功！',
+            time: 3000,
+            type: 'success'
+          })
+          if (res.data.result === 1) {
+            this.$router.push({
+              path: '/orderPay',
+              query: {
+                id: res.data.order_id,
+                total: res.data.order_total
+              }
+            })
+          }
+        })
       }
+    },
+    created: function () {
+      let params = {
+        'user_id': this.$route.query.userId,
+        'spec_id': this.$route.query.specId,
+        'goods_count': this.$route.query.goodsCount,
+        'goods_id': this.$route.query.goodsId
+      }
+      console.log(params)
+      GoodsModel.beforeOrder(params, (res) => {
+        console.log(res)
+        this.list = res.data.list
+        this.detail = res.data.pd
+        this.total = res.data.order_total
+        this.address = res.data.address
+        this.coinNum = res.data.coin
+        this.remainingNum = res.data.amount
+        this.freight = res.data.freight_price
+        // this.list.forEach((item, index, array) => {
+        //   item.goods_price = item.goods_price.toFixed(2)
+        //   this.$set(this.list, index, item)
+        // })
+      })
     }
   }
 </script>
