@@ -9,7 +9,7 @@ const api = {
   //   return 'https://cs1.gzqqs.com/' + port + '/'
   //   // return '192.168.9.244:' + port + '/'
   // }, // 测试环境
-  host: 'cs1.gzqqs.com/',
+  host: 'mgg.gzqqs.com/mgg/',
   // host: '192.168.9.245:8002/',  // 正式环境
 
   // 基础路径

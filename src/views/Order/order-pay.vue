@@ -50,6 +50,8 @@
 </template>
 
 <script>
+  import GoodsModel from '../../models/goods-model'
+
   export default {
     data: function () {
       return {
@@ -59,8 +61,50 @@
       }
     },
     methods: {
-      pay: function () {
-        window.location.href = 'https://mggwx.gzqqs.com/qqs/jsp/pay/jsapi.jsp?openId=' + this.OPENID + '&money=' + this.total
+      confirm: function () {
+        let params = {
+          openId: this.OPENID,
+          orderNo: this.orderNo
+        }
+        GoodsModel.pay(params, (data) => {
+          let appId = data.appId
+          let timeStamp = data.timeStamp
+          let nonceStr = data.nonceStr
+          let wxPackage = data.wxPackage
+          let signType = data.signType
+          let paySign = data.paySign
+          this.pay(appId, timeStamp, nonceStr, wxPackage, signType, paySign)
+        })
+      },
+      pay: function (appId, timeStamp, nonceStr, wxPackage, signType, paySign) {
+        let str = window.navigator.userAgent
+        let version = str.substring(8, 11)
+        let that = this
+        if (version !== '5.0') {
+          alert('微信浏览器系统版本过低，请将微信升级至5.0以上')
+        } else {
+          // eslint-disable-next-line
+          WeixinJSBridge.invoke('getBrandWCPayRequest', {
+            'appId': appId,
+            'timeStamp': timeStamp,
+            'nonceStr': nonceStr,
+            'package': wxPackage,
+            'signType': signType,
+            'paySign': paySign
+          }, (res) => {
+            if (res.err_msg === 'get_brand_wcpay_request:ok') {
+              that.$router.push({
+                path: '/success',
+                query: {
+                  orderNo: that.orderNo
+                }
+              })
+            } else if (res.err_msg === 'get_brand_wcpay_request:cancel') {
+            } else if (res.err_msg === 'get_brand_wcpay_request:fail') {
+              alert('支付失败')
+            }
+          })
+        }
       }
     },
     created: function () {

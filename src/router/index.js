@@ -18,6 +18,14 @@ export default new Router({
         name: 'index',
         component: resolve => require(['../views/Index/index.vue'], resolve)
       }, {
+        path: '/storeGoods',
+        name: 'storeGoods',
+        component: resolve => require(['../views/store/store-goods.vue'], resolve)
+      }, {
+        path: '/storeInfo',
+        name: 'storeInfo',
+        component: resolve => require(['../views/store/store-info.vue'], resolve)
+      }, {
         path: '/mine',
         name: 'mine',
         component: resolve => require(['../views/Mine/mine.vue'], resolve)

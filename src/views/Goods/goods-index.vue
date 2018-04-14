@@ -61,7 +61,7 @@
       <div class="goods-ctrl-buy" @click="buy">立即购买</div>
     </div>
     <spec-choose :goodsId="goodsId" @enable="enable" ref="spec" :goods="goods" :attrs="goods.attrs"
-                 :specs="goods.specs" @cartCount="cartCount"></spec-choose>
+                 :specs="goods.specs" @cartCount="cartCount" @sub="sub" @addIntoCart="addIntoCart"></spec-choose>
   </scroll>
 </template>
 
@@ -82,13 +82,13 @@
     data: function () {
       return {
         picList: [],
+        picLegth: 0,
         current: 0,
         active: 0,
         detailActive: 0,
         detailShow: false,
         specShow: false,
         goods: {},
-        picLegth: 0,
         goodsId: this.GOODSID,
         cartNum: 0
       }
@@ -198,6 +198,37 @@
         this.detailActive = 2
         this.$router.replace({
           path: '/index/goodsInfo'
+        })
+      },
+      sub: function () {
+        let params = {
+          'user_id': '0340d49a98ea4017b5523433d8627212',
+          'spec_id': this.specId,
+          'goods_count': this.num,
+          'goods_id': this.goodsId
+        }
+        this.$router.push({
+          path: '/orderConfirm',
+          query: {
+            userId: params.user_id,
+            specId: params.spec_id,
+            goodsCount: params.goods_count,
+            goodsId: params.goods_id
+          }
+        })
+      },
+      addIntoCart: function () {
+        let params = {
+          'user_id': '0340d49a98ea4017b5523433d8627212',
+          'spec_id': this.specId,
+          'goods_count': this.num,
+          'goods_id': this.goodsId
+        }
+        GoodsModel.cartAdd(params, (res) => {
+          if (res.data.result === 1) {
+            this.$emit('cartCount', res.data.cart_count)
+            this.hide()
+          }
         })
       },
       ...mapActions([

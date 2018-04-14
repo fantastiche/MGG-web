@@ -3,50 +3,68 @@
  * @type {{ name : {path: string, method: string} }}
  */
 const common = {
+  categoryList: {
+    path: 'goods/category/list',
+    method: 'GET',
+    port: '8002'
+  },
   goods: {
-    path: 'goods/goods/:id',
+    path: 'goods/:id',
     method: 'GET',
     port: '8002'
   },
   cartAdd: {
-    path: 'order/order/cart/add',
+    path: 'order/cart/add',
     method: 'POST',
     port: '8004'
   },
+  shopInfo: {
+    path: 'user/shop/info/:id',
+    method: 'GET',
+    port: '8004'
+  },
   cartList: {
-    path: 'order/order/cart/list',
+    path: 'order/cart/list',
     method: 'POST',
     port: '8004'
   },
   cartUpdate: {
-    path: 'order/order/cart/update',
+    path: 'order/cart/update',
     method: 'POST',
     port: '8004'
   },
   cartDelete: {
-    path: 'order/order/cart/cartDeleteAll',
+    path: 'order/cart/cartDeleteAll',
     method: 'POST',
     port: '8004'
   },
   beforeOrder: {
-    path: 'order/order/order/toorder',
+    path: 'order/order/toorder',
     method: 'POST',
     port: '8004'
   },
   orderAdd: {
-    path: 'order/order/order/addorder',
+    path: 'order/order/addorder',
     method: 'POST',
     port: '8004'
   },
   orderList: {
-    path: 'order/order/order/orderlist',
+    path: 'order/order/orderlist',
     method: 'POST',
     port: '8004'
   },
   addressAdd: {
-    path: 'order/order/address/add',
+    path: 'order/address/add',
     method: 'POST',
     port: '8004'
+  },
+  sms: {
+    path: 'sso/code/sms',
+    method: 'GET'
+  },
+  pay: {
+    path: 'qqs/appwx/toPay',
+    method: 'POST'
   }
 }
 

@@ -136,8 +136,12 @@
       },
       sub: function () {
         let cartId = ''
+        let amount = 0
         if (this.$route.query.cartId) {
           cartId = this.$route.query.cartId
+        }
+        if (this.remaining) {
+          amount = this.remainingNum
         }
         let params = {
           'user_id': this.$route.query.userId,
@@ -147,7 +151,8 @@
           'address_id': this.address.address_id,
           'coupon_id': '',
           'shopCode': '012345',
-          'cart_id': cartId
+          'cart_id': cartId,
+          'amount': amount
         }
         GoodsModel.orderAdd(params, (res) => {
           console.log(res)

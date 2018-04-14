@@ -45,7 +45,7 @@
 
 <script>
   import Scroll from 'components/Scroll/Scroll'
-  import GoodsModel from '../../models/goods-model'
+  // import GoodsModel from '../../models/goods-model'
 
   export default {
     components: {
@@ -123,34 +123,9 @@
       },
       buy: function () {
         if (this.action) {
-          let params = {
-            'user_id': '0340d49a98ea4017b5523433d8627212',
-            'spec_id': this.specId,
-            'goods_count': this.num,
-            'goods_id': this.goodsId
-          }
-          this.$router.push({
-            path: '/orderConfirm',
-            query: {
-              userId: params.user_id,
-              specId: params.spec_id,
-              goodsCount: params.goods_count,
-              goodsId: params.goods_id
-            }
-          })
+          this.$emit('sub', this.specId)
         } else {
-          let params = {
-            'user_id': '0340d49a98ea4017b5523433d8627212',
-            'spec_id': this.specId,
-            'goods_count': this.num,
-            'goods_id': this.goodsId
-          }
-          GoodsModel.cartAdd(params, (res) => {
-            if (res.data.result === 1) {
-              this.$emit('cartCount', res.data.cart_count)
-              this.hide()
-            }
-          })
+          this.$emit('addIntoCart', this.specId)
         }
       }
     },

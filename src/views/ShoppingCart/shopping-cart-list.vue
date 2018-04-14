@@ -298,7 +298,7 @@
   }
 
   .cart-body {
-    padding-bottom: 173/@rem;
+    padding-bottom: 273/@rem;
   }
 
   .cart-item {
@@ -311,7 +311,7 @@
       color: #e8e8e8 !important;
     }
     .icon-uncheck, .icon-check {
-      width: 120/@rem;
+      width: 40/@rem;
     }
     img {
       margin-left: 20/@rem;
@@ -324,10 +324,13 @@
       flex-grow: 1;
       display: flex;
       flex-direction: column;
+      max-width: 430/@rem;
       .cart-item-title {
         .dpr-font(14px);
         color: #333333;
         line-height: 38/@rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
       .cart-item-spec {
         .dpr-font(12px);
@@ -356,6 +359,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    z-index: 1001;
     .sub-info {
       flex-grow: 1;
       display: flex;

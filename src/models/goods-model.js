@@ -3,6 +3,13 @@ import $http from '../util/api-util'
 
 const GoodsModel = {
   // 商品详情
+  categoryList: function (params, successCallback, failCallback, token) {
+    let api = apiConfig.categoryList
+    $http(api, params, function (res) {
+      successCallback(res.data)
+    }, token)
+  },
+  // 商品详情
   goods: function (params, successCallback, failCallback, token) {
     let api = apiConfig.goods
     $http(api, params, function (res) {
@@ -61,6 +68,20 @@ const GoodsModel = {
   // 添加地址
   addressAdd: function (params, successCallback, failCallback, token) {
     let api = apiConfig.addressAdd
+    $http(api, params, function (res) {
+      successCallback(res.data)
+    }, token)
+  },
+  // 店主信息
+  shopInfo: function (params, successCallback, failCallback, token) {
+    let api = apiConfig.shopInfo
+    $http(api, params, function (res) {
+      successCallback(res.data)
+    }, token)
+  },
+  // 获取验证码
+  sms: function (params, successCallback, failCallback, token) {
+    let api = apiConfig.sms
     $http(api, params, function (res) {
       successCallback(res.data)
     }, token)

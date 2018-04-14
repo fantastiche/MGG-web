@@ -96,3 +96,9 @@
     color: @red !important;
   }
 </style>
+
+<style>
+  .vux-popup-header-right {
+    color: #e60012 !important;
+  }
+</style>

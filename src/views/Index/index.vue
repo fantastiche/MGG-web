@@ -6,13 +6,24 @@
         <input type="text" placeholder="请输入搜索商品">
         <span class="icon-massage"></span>
       </div>
-      <div class="goods-type" ref="types">
-        <span ref="index" :class="{'active':active===0}" @click="changeType(0)">大牌秒杀</span>
-        <span ref="beauty" :class="{'active':active===1}" @click="changeType(1)">美妆个护</span>
-        <span ref="home" :class="{'active':active===2}" @click="changeType(2)">家居日用</span>
-        <span ref="life" :class="{'active':active===3}" @click="changeType(3)">生活服务</span>
-        <span class="line" ref="line"></span>
-      </div>
+      <scroll style="width: 100%;overflow: hidden" :direction="'horizontal'">
+        <div class="goods-type-wrapper">
+          <div class="goods-type" ref="types">
+            <div class="type-name">
+              <span :class="{'active':active===0}" @click="changeType(0)">大牌秒杀</span>
+            </div><div class="type-name">
+              <span :class="{'active':active===1}" @click="changeType(1)">美妆个护</span>
+            </div><div class="type-name">
+              <span :class="{'active':active===2}" @click="changeType(2)">家居日用</span>
+            </div><div class="type-name">
+              <span :class="{'active':active===3}" @click="changeType(3)">生活服务</span>
+            </div><div class="type-name">
+              <span :class="{'active':active===4}" @click="changeType(4)">生活服务</span>
+            </div>
+            <span class="line" ref="line"></span>
+          </div>
+        </div>
+      </scroll>
     </div>
     <my-nav :position="0"></my-nav>
     <scroll class="scroll-content">
@@ -73,6 +84,7 @@
   import Scroll from 'components/Scroll/Scroll'
   import {Swiper} from 'vux'
   import MyNav from 'components/Nav/Nav'
+  import GoodsModel from '../../models/goods-model'
 
   export default {
     components: {
@@ -92,7 +104,12 @@
     methods: {
       changeType: function (index) {
         this.active = index
-        this.$refs.line.style.left = `${(this.$refs.types.offsetWidth - this.$refs.index.offsetWidth * 4) / 3 * index + this.$refs.index.offsetWidth * index}px`
+        let width = 0
+        for (let i = 0; i < index; i++) {
+          width += this.$refs.types.children[i].offsetWidth
+        }
+        this.$refs.line.style.left = `${width + (this.$refs.types.children[index].offsetWidth - this.$refs.types.children[index].children[0].offsetWidth) / 2}px`
+        console.log(this.$refs.line.style.left)
       },
       change: function (index) {
         this.current = index
@@ -104,12 +121,16 @@
             img: 'https://cs1.gzqqs.com/Order_New/banner.png'
           })
         }
+        GoodsModel.categoryList({}, (res) => {
+          console.log(res)
+        })
       }
     },
     created: function () {
       this.init()
       this.$nextTick(() => {
-        this.$refs.line.style.width = `${this.$refs.index.offsetWidth}px`
+        console.log(this.$refs.types.children)
+        this.$refs.line.style.left = `${(this.$refs.types.children[0].offsetWidth - this.$refs.types.children[0].children[0].offsetWidth) / 2}px`
       })
     }
   }
@@ -124,11 +145,17 @@
     overflow: hidden;
   }
 
+  .goods-type-wrapper {
+    width: 100%;
+    overflow: scroll;
+  }
+
   .line {
     display: inline-block;
     position: absolute;
     bottom: 0;
     left: 0;
+    width: 120/@rem;
     background: @red;
     height: 6/@rem;
     border-radius: 3/@rem;
@@ -186,14 +213,16 @@
       }
     }
     .goods-type {
-      display: flex;
+      white-space: nowrap;
       height: 84/@rem;
-      align-items: center;
-      justify-content: space-between;
-      margin: 0 30/@rem;
       position: relative;
-      span {
+      .type-name {
+        flex: 1;
+        display: inline-block;
         text-align: center;
+        height: 84/@rem;
+        width: 180/@rem;
+        line-height: 84/@rem;
         color: #535353;
         .dpr-font(15px);
         &:last-child {
