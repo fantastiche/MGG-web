@@ -26,6 +26,10 @@ export default new Router({
         name: 'storeInfo',
         component: resolve => require(['../views/store/store-info.vue'], resolve)
       }, {
+        path: '/register',
+        name: 'register',
+        component: resolve => require(['../views/Register/register.vue'], resolve)
+      }, {
         path: '/mine',
         name: 'mine',
         component: resolve => require(['../views/Mine/mine.vue'], resolve)
